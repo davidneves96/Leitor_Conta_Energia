@@ -29,7 +29,7 @@ class ExtratorServico:
         # Feche o documento
         pdf_document.close()
 
-    def extrair_PyMuPDF (
+    def executar_extracao (
             self, caminho:str,
             pagina:int, coordenadas_x0_y0_x1_y1:list, 
             cabecalho:bool, ordenacao_horizontal:bool = True, 
