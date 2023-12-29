@@ -94,8 +94,27 @@ def main():
         .withColumn("Codigo da Instalacao", lit(cd_inst))
     ) 
 
-    # Salvar no HDFS usando as configurações do ExtratorSetup
-    extrator_servico.salvar_no_hdfs(df_fatura, extrator_setup.location_hdfs, "fatura")
+    extrator_servico.salvar_no_hdfs(df_fatura, "append", extrator_setup.location_hdfs, "fatura")
+
+    df_info_cliente = extrator_servico.executar_extracao(args.caminho_pdf, 0, [35, 748, 430, 764], False, True, 1)
+
+    cpf_cnpj = df_info_cliente.select("dados").filter(col("id") == 1).first()[0] 
+    cliente = df_info_cliente.select("dados").filter(col("id") == 2).first()[0] 
+    ender_cli = df_info_cliente.select("dados").filter(col("id") == 3).first()[0]
+
+    df_cliente = (
+        df_info_cliente
+        .select(
+            lit(cpf_cnpj).alias("CPF_CNPJ"),
+            lit(cliente).alias("Cliente"),
+            lit(ender_cli).alias("Endereco")
+        )
+        .withColumn("Codigo do Cliente", lit(cd_cli))
+        .withColumn("Codigo da Instalacao", lit(cd_inst))
+        .limit(1)
+    )
+
+    extrator_servico.salvar_no_hdfs(df_cliente, "append", extrator_setup.location_hdfs, "cliente")
 
     spark.stop()
 
