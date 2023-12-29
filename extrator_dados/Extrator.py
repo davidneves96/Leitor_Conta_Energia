@@ -23,10 +23,11 @@ def main():
     
 
     # Execução da extração
-    dataframe_extracao = extrator_servico.executar_extracao(caminho_pdf)
-
+    # dataframe_extracao = extrator_servico.executar_extracao(args.caminho_pdf)
+    df_itens_fatura = extrator_servico(args.caminho_pdf, 0, [20, 340, 140, 545], True, True)
+    df_itens_fatura.show()
     # Salvar no HDFS usando as configurações do ExtratorSetup
-    extrator_servico.salvar_no_hdfs(dataframe_extracao, extrator_setup.location_hdfs, extrator_setup.nome_tabela_hive)
+    # extrator_servico.salvar_no_hdfs(dataframe_extracao, extrator_setup.location_hdfs, extrator_setup.nome_tabela_hive)
 
     spark.stop()
 
