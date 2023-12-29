@@ -1,8 +1,8 @@
 import fitz
 
 from pyspark.sql import DataFrame
-from pyspark.sql.functions import col, row_number, lit
-from pyspark.sql.types import StringType, IntegerType, DecimalType, StructType, StructField
+from pyspark.sql.functions import row_number, lit
+from pyspark.sql.types import StringType, StructType, StructField
 from pyspark.sql.window import Window
 
 class ExtratorServico:
@@ -99,5 +99,25 @@ class ExtratorServico:
         df = df.withColumn("id", row_number().over(partition))
         
         return df
+
+    def join_bases (dataframe_um: DataFrame, 
+                    dataframe_dois: DataFrame, 
+                    chaves_join:list = "id", 
+                    orientacao:str = "full") -> DataFrame:
+
+        df_join = (
+            dataframe_um
+            .join(
+                dataframe_dois, 
+                chaves_join, 
+                orientacao
+            )
+        )
+    
+        return df_join
+    
+    def salvar_no_hdfs (df: DataFrame, caminho_no_hdfs:str, nome_base:str) -> None:
+        caminho_hdfs = caminho_no_hdfs + nome_base
+        df.write.parquet(caminho_hdfs)
 
     # Adicione outras funções conforme necessário
