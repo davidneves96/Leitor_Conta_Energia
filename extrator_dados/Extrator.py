@@ -10,16 +10,12 @@ def main():
 
     parser = argparse.ArgumentParser(description='Script de Extração de Dados de PDF')
     parser.add_argument('--caminho_pdf', required=True, help='Caminho para o arquivo PDF a ser processado')
-    # Adicione mais argumentos conforme necessário
     args = parser.parse_args()
 
-    # Configuração da sessão Spark
     spark = SparkSession.builder.appName("ExtratorPDF").getOrCreate()
 
-    # Configuração e inicialização do ExtratorServico
     extrator_servico = ExtratorServico(spark)
 
-    # Configuração do ExtratorSetup
     extrator_setup = ExtratorSetup()
 
     df_itens_fatura = extrator_servico.executar_extracao(args.caminho_pdf, 0, [20, 340, 140, 545], True, True)
