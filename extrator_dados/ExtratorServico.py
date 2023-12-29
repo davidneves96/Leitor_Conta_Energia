@@ -9,27 +9,7 @@ class ExtratorServico:
     def __init__(self, spark_session):
         self.spark = spark_session
 
-    def marcar_pdf (caminho_entrada:str, caminho_saida:str, coordenadas_x0_y0_x1_y1:list, page_number:int = 1):
-        # Abra o PDF usando PyMuPDF
-        pdf_document = fitz.open(caminho_entrada)
-
-        # Selecione a página que você deseja visualizar
-        page = pdf_document[page_number - 1]
-
-        # Defina as coordenadas do retângulo que você deseja visualizar
-        x0, y0, x1, y1 = coordenadas_x0_y0_x1_y1
-
-        # Desenhe um retângulo na página para visualizar as coordenadas
-        rect = fitz.Rect(x0, y0, x1, y1)
-        highlight = page.add_highlight_annot(rect)
-
-        # Salve o PDF modificado com a marcação das coordenadas
-        pdf_document.save(caminho_saida, garbage=4, deflate=True, clean=True)
-
-        # Feche o documento
-        pdf_document.close()
-
-    def executar_extracao (
+    def executar_extracao(
             self, caminho:str,
             pagina:int, coordenadas_x0_y0_x1_y1:list, 
             cabecalho:bool, ordenacao_horizontal:bool = True, 
@@ -100,7 +80,7 @@ class ExtratorServico:
         
         return df
 
-    def join_bases (dataframe_um: DataFrame, 
+    def join_bases(spark, dataframe_um: DataFrame, 
                     dataframe_dois: DataFrame, 
                     chaves_join:list = "id", 
                     orientacao:str = "full") -> DataFrame:
@@ -116,8 +96,8 @@ class ExtratorServico:
     
         return df_join
     
-    def salvar_no_hdfs (df: DataFrame, caminho_no_hdfs:str, nome_base:str) -> None:
+    def salvar_no_hdfs(spark, df:DataFrame, modo:str, caminho_no_hdfs:str, nome_base:str) -> None:
         caminho_hdfs = caminho_no_hdfs + nome_base
-        df.write.parquet(caminho_hdfs)
+        df.write.mode(modo).parquet(caminho_hdfs)
 
     # Adicione outras funções conforme necessário
